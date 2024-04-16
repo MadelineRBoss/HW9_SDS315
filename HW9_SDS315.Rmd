@@ -1,6 +1,8 @@
 ---
 title: "HW_9_SDS315"
-output: html_document
+output:
+  pdf_document: default
+  html_document: default
 date: "2024-04-12"
 ---
 
@@ -22,7 +24,7 @@ Name: Madeline Boss
 
 EID: mrb5727
 
-To see the code visit [Github](https://github.com/MadelineRBoss/HW4_SDS315)
+To see the code visit [Github](https://github.com/MadelineRBoss/HW9_SDS315)
 
 ## Probelm 1
 
@@ -46,32 +48,36 @@ Proportion of those that received a GOTV call and voted is `r round(prop_vote_GO
 
 The sample proportion of those who did not receive a GOTV call who voted in 1998 is `r round(prop_vote_GOTV_no, 2)`
 
-The 95% confidence interval for the difference in proportions in voting for those who did and didn't get a call is `r round(turnout_diffmean_ci$lower, 2)` - `r round(turnout_diffmean_ci$upper, 2)`
+The 95% confidence interval for the difference in proportions in voting for those who did and didn't get a call is `r round(turnout_diffmean_ci$lower, 2)` - `r round(turnout_diffmean_ci$upper, 2)`S
 
 ### Part B
 
 #### Voting in 1996
 ```{r 2a_voted1996, echo=FALSE}
-ggplot(filter(turnout_data, GOTV_call ==1)) + geom_bar(aes(x = factor(voted1996)))  + labs(x = "Voted in 1996", title ="Voting in 1996 when getting a GOTV Call")
-
-ggplot(filter(turnout_data, GOTV_call ==0)) + geom_bar(aes(x = factor(voted1996)))  + labs(x = "Voted in 1996", title ="Voting in 1996 when not getting a GOTV Call")
+ggplot(turnout_data) + geom_bar(aes(x = factor(GOTV_call), y= voted1998, fill=factor(voted1996)), stat = "identity") + facet_wrap(~voted1996) + labs(x = "Got GOTV Call", y = "Count of People who Voted in 1998", title ="Voting in 1996 effect on getting GOTV call")
 ```
 
 As seen in the graphs above, the amount of GOTV calls received for people who voted in 1996 was significantly higher. This makes it a confounding factor.
 
+
+
 #### Major Party Membership
 ```{r 2a_majorpty, echo=FALSE}
-ggplot(turnout_data) + geom_bar(aes(x = factor(GOTV_call))) + facet_wrap(~MAJORPTY) + labs(x = "Has Party membership", title ="Party membership effect on getting GOTV call")
+ggplot(turnout_data) + geom_bar(aes(x = factor(GOTV_call), y= voted1998, fill=factor(MAJORPTY)), stat = "identity") + facet_wrap(~MAJORPTY) + labs(x = "Got GOTV Call", y= "Count of People who Voted in 1998" ,title ="Party membership effect on getting GOTV call")
 ```
 
 As seen in the graph above, people who were affiliated with a political party were much more likely not to get a GOTV call. This makes party affliation a confunding factor.
 
+
+
 #### Age
 ```{r 2A_AGE, echo= FALSE}
-ggplot(turnout_data) + geom_boxplot(aes(group = GOTV_call, AGE)) + labs(title = "Average Age by if they Voted in 1998 and if they got a GOTV Call", y = "If Voted in 1998")
+ggplot(turnout_data) + geom_boxplot(aes(group = factor(GOTV_call), AGE, fill = factor(voted1998))) + facet_wrap(~voted1998) + labs(title = "Average Age by if they Voted in 1998 and if they got a GOTV Call", y = "If they got a GOTV Call")
 ```
 
 As seen in the graph above, people who are older were more likely to vote in 1998. Do to this, age is also a confounding factor.
+
+
 
 ### Part C
 ```{r 2C_math, echo = FALSE}
@@ -84,11 +90,11 @@ GOTV_matches = match.data(GOTV_match)
 #### Proof
 
 ```{r 2C_proof, echo=FALSE}
-ggplot(GOTV_matches) + geom_bar(aes(x = factor(GOTV_call))) + facet_wrap(~voted1996) + labs(x = "Voted in 1996", title ="Voting in 1996 effect on GOTV call")
+ggplot(GOTV_matches) + geom_bar(aes(x = factor(GOTV_call), y= voted1998, fill=factor(voted1996)), stat = "identity") + facet_wrap(~voted1996) + labs(x = "Got GOTV Call", y = "Count of People who Voted in 1998", title ="Voting in 1996 effect on getting GOTV call")
 
-ggplot(GOTV_matches) + geom_bar(aes(x = factor(GOTV_call))) + facet_wrap(~MAJORPTY) + labs(x = "Has Party membership", title ="Party membership effect on GOTV call")
+ggplot(GOTV_matches) + geom_bar(aes(x = factor(GOTV_call), y= voted1998, fill=factor(MAJORPTY)), stat = "identity") + facet_wrap(~MAJORPTY) + labs(x = "Got GOTV Call", y= "Count of People who Voted in 1998" ,title ="Party membership effect on getting GOTV call")
 
-ggplot(GOTV_matches) + geom_boxplot(aes(group = GOTV_call, AGE)) + labs(title = "Average Age by GOTV call", y = "If Got GOTV call")
+ggplot(GOTV_matches) + geom_boxplot(aes(group = factor(GOTV_call), AGE, fill = factor(voted1998))) + facet_wrap(~voted1998) + labs(title = "Average Age by if they Voted in 1998 and if they got a GOTV Call", y = "If they got a GOTV Call")
 ```
 
 As seen above, after matching the GOTV call ratios are now approximately equal in 1996 voting and majority party, and the age boxplots among GOTV call is approximately equal.
@@ -104,6 +110,9 @@ boot_matched_GOTV <- do(1000)*diffprop(voted1998==1 ~ GOTV_call, data=mosaic::re
 
 ci_matched_GOTV <- confint(boot_matched_GOTV, level = 0.95)
 ```
+
+
+
 
 #### Matching Statistics 
 
@@ -128,6 +137,8 @@ ggplot(solder_data) + geom_boxplot(aes(x=Solder, y=skips)) + labs(title = "Solde
 ```
 
 Starting with Opening Type, as the opening size decreases, there's an associated increase in skips. Next with Solder Type, it appears that when a solder is thinner, it has an increased chance of having skips.
+
+
 
 ### Part B
 ```{r 2b, echo=FALSE}
